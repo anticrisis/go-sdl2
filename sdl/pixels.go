@@ -59,14 +59,14 @@ type PixelFormat struct {
 	Gmask         uint32       // a mask representing the location of the green component of the pixel
 	Bmask         uint32       // a mask representing the location of the blue component of the pixel
 	Amask         uint32       // a mask representing the location of the alpha component of the pixel or 0 if the pixel format doesn't have any alpha information
-	rLoss         uint8        // (internal use)
-	gLoss         uint8        // (internal use)
-	bLoss         uint8        // (internal use)
-	aLoss         uint8        // (internal use)
-	rShift        uint8        // (internal use)
-	gShift        uint8        // (internal use)
-	bShift        uint8        // (internal use)
-	aShift        uint8        // (internal use)
+	RLoss         uint8        // (internal use)
+	GLoss         uint8        // (internal use)
+	BLoss         uint8        // (internal use)
+	ALoss         uint8        // (internal use)
+	RShift        uint8        // (internal use)
+	GShift        uint8        // (internal use)
+	BShift        uint8        // (internal use)
+	AShift        uint8        // (internal use)
 	refCount      int32        // (internal use)
 	next          *PixelFormat // (internal use)
 }
