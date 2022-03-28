@@ -436,10 +436,24 @@ func (surface *Surface) SetClipRect(rect *Rect) bool {
 	return C.SDL_SetClipRect(surface.cptr(), rect.cptr()) > 0
 }
 
+// SetClipRect_v2 sets the clipping rectangle for the surface
+// (https://wiki.libsdl.org/SDL_SetClipRect)
+func (surface *Surface) SetClipRect_v2(rect Rect) bool {
+	return C.SDL_SetClipRect(surface.cptr(), rect.cptr()) > 0
+}
+
 // GetClipRect returns the clipping rectangle for a surface.
 // (https://wiki.libsdl.org/SDL_GetClipRect)
 func (surface *Surface) GetClipRect(rect *Rect) {
 	C.SDL_GetClipRect(surface.cptr(), rect.cptr())
+}
+
+// GetClipRect returns the clipping rectangle for a surface.
+// (https://wiki.libsdl.org/SDL_GetClipRect)
+func (surface *Surface) GetClipRect_v2() Rect {
+	var r Rect
+	C.SDL_GetClipRect(surface.cptr(), r.cptr())
+	return r
 }
 
 // Convert copies the existing surface into a new one that is optimized for blitting to a surface of a specified pixel format.
@@ -481,6 +495,15 @@ func (surface *Surface) FillRect(rect *Rect, color uint32) error {
 	return nil
 }
 
+// FillRect_v2 performs a fast fill of a rectangle with a specific color.
+// (https://wiki.libsdl.org/SDL_FillRect)
+func (surface *Surface) FillRect_v2(rect Rect, color uint32) error {
+	if C.SDL_FillRect(surface.cptr(), rect.cptr(), C.Uint32(color)) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
 // FillRects performs a fast fill of a set of rectangles with a specific color.
 // (https://wiki.libsdl.org/SDL_FillRects)
 func (surface *Surface) FillRects(rects []Rect, color uint32) error {
@@ -499,10 +522,46 @@ func (surface *Surface) Blit(srcRect *Rect, dst *Surface, dstRect *Rect) error {
 	return nil
 }
 
+// Blit_v2 performs a fast surface copy to a destination surface.
+// (https://wiki.libsdl.org/SDL_BlitSurface)
+func (surface *Surface) Blit_v2(srcRect Rect, dst *Surface, dstRect Rect) error {
+	if C.SDL_BlitSurface(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// BlitFull performs a fast surface copy of the entire surface to a destination surface.
+// (https://wiki.libsdl.org/SDL_BlitSurface)
+func (surface *Surface) BlitFull(dst *Surface, dstRect Rect) error {
+	if C.SDL_BlitSurface(surface.cptr(), nil, dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
 // BlitScaled performs a scaled surface copy to a destination surface.
 // (https://wiki.libsdl.org/SDL_BlitScaled)
 func (surface *Surface) BlitScaled(srcRect *Rect, dst *Surface, dstRect *Rect) error {
 	if C.SDL_BlitScaled(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// BlitScaledFullSource performs a scaled surface copy to a destination surface.
+// (https://wiki.libsdl.org/SDL_BlitScaled)
+func (surface *Surface) BlitScaledFullSource(dst *Surface, dstRect Rect) error {
+	if C.SDL_BlitScaled(surface.cptr(), nil, dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// BlitScaledFullDestination performs a scaled surface copy to a destination surface.
+// (https://wiki.libsdl.org/SDL_BlitScaled)
+func (surface *Surface) BlitScaledFullDestination(srcRect Rect, dst *Surface) error {
+	if C.SDL_BlitScaled(surface.cptr(), nil, dst.cptr(), nil) != 0 {
 		return GetError()
 	}
 	return nil
@@ -521,6 +580,24 @@ func (surface *Surface) UpperBlit(srcRect *Rect, dst *Surface, dstRect *Rect) er
 // (https://wiki.libsdl.org/SDL_LowerBlit)
 func (surface *Surface) LowerBlit(srcRect *Rect, dst *Surface, dstRect *Rect) error {
 	if C.SDL_LowerBlit(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// LowerBlit_v2 performs low-level surface blitting only.
+// (https://wiki.libsdl.org/SDL_LowerBlit)
+func (surface *Surface) LowerBlit_v2(srcRect Rect, dst *Surface, dstRect Rect) error {
+	if C.SDL_LowerBlit(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// LowerBlitFull performs low-level surface blitting only.
+// (https://wiki.libsdl.org/SDL_LowerBlit)
+func (surface *Surface) LowerBlitFull(dst *Surface, dstRect Rect) error {
+	if C.SDL_LowerBlit(surface.cptr(), nil, dst.cptr(), dstRect.cptr()) != 0 {
 		return GetError()
 	}
 	return nil
@@ -547,6 +624,15 @@ func (surface *Surface) UpperBlitScaled(srcRect *Rect, dst *Surface, dstRect *Re
 // LowerBlitScaled performs low-level surface scaled blitting only.
 // (https://wiki.libsdl.org/SDL_LowerBlitScaled)
 func (surface *Surface) LowerBlitScaled(srcRect *Rect, dst *Surface, dstRect *Rect) error {
+	if C.SDL_LowerBlitScaled(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
+		return GetError()
+	}
+	return nil
+}
+
+// LowerBlitScaled performs low-level surface scaled blitting only.
+// (https://wiki.libsdl.org/SDL_LowerBlitScaled)
+func (surface *Surface) LowerBlitScaled_v2(srcRect Rect, dst *Surface, dstRect Rect) error {
 	if C.SDL_LowerBlitScaled(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr()) != 0 {
 		return GetError()
 	}
@@ -826,6 +912,12 @@ func (surface *Surface) Set(x, y int, c color.Color) {
 // SoftStretchLinear performs bilinear scaling between two surfaces of the same format, 32BPP.
 // (https://wiki.libsdl.org/SDL_SoftStretchLinear)
 func (surface *Surface) SoftStretchLinear(srcRect *Rect, dst *Surface, dstRect *Rect) (err error) {
+	return errorFromInt(int(C.SDL_SoftStretchLinear(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr())))
+}
+
+// SoftStretchLinear_v2 performs bilinear scaling between two surfaces of the same format, 32BPP.
+// (https://wiki.libsdl.org/SDL_SoftStretchLinear)
+func (surface *Surface) SoftStretchLinear_v2(srcRect Rect, dst *Surface, dstRect Rect) (err error) {
 	return errorFromInt(int(C.SDL_SoftStretchLinear(surface.cptr(), srcRect.cptr(), dst.cptr(), dstRect.cptr())))
 }
 
